@@ -1,7 +1,7 @@
 # do run.do
 # ** Warning: (vlib-34) Library already exists at "work".
 # Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
-# Start time: 22:43:44 on May 03,2025
+# Start time: 23:31:27 on May 03,2025
 # vlog -reportprogress 300 -sv "+incdir+/home/masha/uvm-1.2/src" /home/masha/uvm-1.2/src/uvm_pkg.sv 
 # -- Compiling package uvm_pkg
 # ** Warning: /home/masha/uvm-1.2/src/seq/uvm_sequencer_base.svh(1499): (vlog-2186) SystemVerilog testbench feature
@@ -16,10 +16,10 @@
 # 
 # Top level modules:
 # 	--none--
-# End time: 22:43:44 on May 03,2025, Elapsed time: 0:00:00
+# End time: 23:31:28 on May 03,2025, Elapsed time: 0:00:01
 # Errors: 0, Warnings: 3
 # Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
-# Start time: 22:43:44 on May 03,2025
+# Start time: 23:31:28 on May 03,2025
 # vlog -reportprogress 300 -sv tb/uvm/apb_agent.sv tb/uvm/apb_agent_config.sv tb/uvm/apb_uart_env.sv tb/uvm/apb_uart_pkg.sv tb/uvm/base_test.sv tb/uvm/ram_agent.sv tb/uvm/ram_agent_config.sv tb/uvm/uart_agent.sv tb/uvm/uart_agent_config.sv 
 # ** Error: (vlog-13069) tb/uvm/apb_agent.sv(1): near "uvm_agent": syntax error, unexpected IDENTIFIER.
 # ** Error: tb/uvm/apb_agent.sv(1): Error in class extension specification.
@@ -52,10 +52,11 @@
 # ** at tb/uvm/uart_agent_config.sv(2): (vlog-2163) Macro `uvm_object_utils is undefined.
 # ** Error: (vlog-13069) ** while parsing file included at tb/uvm/apb_agent.sv(6)
 # ** at tb/uvm/uart_agent_config.sv(2): near "(": syntax error, unexpected '(', expecting function or task or "SystemVerilog keyword 'pure'".
-# End time: 22:43:45 on May 03,2025, Elapsed time: 0:00:01
+# End time: 23:31:28 on May 03,2025, Elapsed time: 0:00:00
 # Errors: 19, Warnings: 0
 # ** Error: /home/masha/intelFPGA/20.1/modelsim_ase/linuxaloem/vlog failed.
 # Error in macro ./run.do line 8
 # /home/masha/intelFPGA/20.1/modelsim_ase/linuxaloem/vlog failed.
 #     while executing
 # "vlog -sv tb/uvm/*.sv"
+# Break key hit
