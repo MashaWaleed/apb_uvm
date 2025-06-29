@@ -1,3 +1,4 @@
+package apb_sequence_item_pkg;
 `timescale 1ps/1ps
 `include "uvm_macros.svh"
 
@@ -5,10 +6,6 @@
     import uvm_pkg::*;  
     import shared_pkg::*;
     import config_pkg::*;
-    import driver_pkg::*;
-    import sequencer_pkg::*;
-    import sequenceItem_pkg::*;
-    import monitor_pkg::*;
 
 class apb_item extends uvm_sequence_item;
 
@@ -31,3 +28,4 @@ class apb_item extends uvm_sequence_item;
   endfunction
 
 endclass
+endpackage
