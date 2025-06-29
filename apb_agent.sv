@@ -1,3 +1,4 @@
+package apb_agent_pkg;
 `timescale 1ps/1ps
 `include "uvm_macros.svh"
 
@@ -5,11 +6,11 @@
     import uvm_pkg::*;  
     import shared_pkg::*;
     import config_pkg::*;
-    import driver_pkg::*;
-    import sequencer_pkg::*;
-    import sequenceItem_pkg::*;
-    import monitor_pkg::*;
-
+    import apb_driver_pkg::*;
+    import apb_sequencer_pkg::*;
+    import apb_sequenceItem_pkg::*;
+    import apb_monitor_pkg::*;
+    
 class apb_agent extends uvm_agent;
 
     `uvm_component_utils(apb_agent);
@@ -66,3 +67,4 @@ class apb_agent extends uvm_agent;
         `uvm_info("APB_AGENT", "Connect phase done.", UVM_HIGH)
     endfunction
 endclass
+endpackage
