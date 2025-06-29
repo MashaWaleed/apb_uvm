@@ -133,7 +133,7 @@ always@(*)begin
 endcase
 end
 
-assign chosenSlave = (PSELx && PADDR[DATA_WIDTH-1:DATA_WIDTH-2] == ADDR_slave)? 1 : 0 ;
+assign chosenSlave = (PSELx && PADDR[ADDR_WIDTH-1:ADDR_WIDTH-2] == ADDR_slave)? 1 : 0 ;
 //assign Range = $clog2(PSTRB) * 8;
    
 endmodule
