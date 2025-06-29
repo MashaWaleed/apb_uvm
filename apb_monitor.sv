@@ -1,3 +1,4 @@
+package apb_monitor_pkg;
 `timescale 1ps/1ps
 `include "uvm_macros.svh"
 
@@ -5,10 +6,6 @@
     import uvm_pkg::*;  
     import shared_pkg::*;
     import config_pkg::*;
-    import driver_pkg::*;
-    import sequencer_pkg::*;
-    import sequenceItem_pkg::*;
-    import monitor_pkg::*;
 
 class APB_monitor extends uvm_monitor;
   `uvm_component_utils(APB_monitor)
@@ -64,4 +61,4 @@ class APB_monitor extends uvm_monitor;
 
   endtask
 endclass
-
+endpackage
