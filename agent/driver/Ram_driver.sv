@@ -4,13 +4,12 @@ import shared_pkg::*;
 import Ram_sequenceItem_pkg::*;
 import uvm_pkg::*;
 `include "uvm_macros.svh"
-`define create_obj(type, name) type::type_id::create(name);
 
 // driver class
 class Ram_driver extends uvm_driver #(Ram_sequenceItem);
     `uvm_component_utils(Ram_driver)
     virtual Ram_interface v_if;
-    Ram_sequenceItem stim_seq_item;
+    Ram_sequenceItem item;
 
     function new(string name = "Ram_driver", uvm_component parent = null);
         super.new(name, parent);
@@ -22,6 +21,7 @@ class Ram_driver extends uvm_driver #(Ram_sequenceItem);
     endfunction
     task run_phase(uvm_phase phase);
         super.run_phase(phase);
+        item = Ram_sequenceItem::type_id::create("item");
         // forever begin
         // end
         `uvm_info("RAM Driver run Phase", get_full_name(), UVM_HIGH)

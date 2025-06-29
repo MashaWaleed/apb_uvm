@@ -1,19 +1,19 @@
+import shared_pkg::*;
 interface APB_interface(
     input clk
 );
-    // logic PCLK;
-    logic PRESETn;
-    logic [ADDR_WIDTH-1:0] PADDR;
-    logic [2:0] PPROT;
-    logic PSELx;
-    logic PENABLE;
-    logic PWRITE;
+    /* input */ logic PRESETn;
+    /* input */ logic [ADDR_WIDTH-1:0] PADDR;
+    /* input */ logic [2:0] PPROT;
+    /* input */ logic PSELx;
+    /* input */ logic PENABLE;
+    /* input */ logic PWRITE;
 
-    logic [DATA_WIDTH-1:0] PWDATA;
-    logic [PSTRB_WIDTH-1:0] PSTRB;
+    /* input */ logic [DATA_WIDTH-1:0] PWDATA;
+    /* input */ logic [PSTRB_WIDTH-1:0] PSTRB;
 
     //outputs from Slave to Master
-    logic [DATA_WIDTH-1:0] PRDATA;
-    logic PSLVERR;
-    logic PREADY;
+    /* output */ logic [DATA_WIDTH-1:0] PRDATA;
+    /* output */ logic PSLVERR;
+    /* output */ logic PREADY;
 endinterface

@@ -1,12 +1,13 @@
-interface fifo_if #(parameter width = 8, parameter depth = 16) (
-    input  logic clk
+import shared_pkg::*;
+interface fifo_if (
+    input clk
 );
-    logic rst_n
-    logic wr_en;           // write enable
-    logic rd_en;           // read enable
-    logic [width-1:0] din; // data in
+    /* input */ logic rst_n;
+    /* input */ logic wr_en;                    // write enable
+    /* input */ logic rd_en;                    // read enable
+    /* input */ logic [DATA_WIDTH-1 : 0] din;   // data in
     
-    logic [width-1:0] dout;// data out
-    logic full;            // full flag
-    logic empty;           // empty flag
+    /* output */ logic [DATA_WIDTH-1 : 0] dout; // data out
+    /* output */ logic full;                    // full flag
+    /* output */ logic empty;                   // empty flag
 endinterface

@@ -1,6 +1,6 @@
 package Ram_sequencer_pkg;
 import uvm_pkg::*;
-import sequenceItem_pkg::*;
+import Ram_sequenceItem_pkg::*;
 `include "uvm_macros.svh"
 `define create_obj(type, name) type::type_id::create(name, this);
 

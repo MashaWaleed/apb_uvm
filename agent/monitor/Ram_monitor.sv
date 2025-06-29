@@ -1,9 +1,8 @@
 package Ram_monitor_pkg;
 import shared_pkg::*;
-import sequenceItem_pkg::*;
+import Ram_sequenceItem_pkg::*;
 import uvm_pkg::*;
 `include "uvm_macros.svh"
-`define create_obj(type, name) type::type_id::create(name);
 // monitor
 class Ram_monitor extends uvm_monitor;
     `uvm_component_utils(Ram_monitor)

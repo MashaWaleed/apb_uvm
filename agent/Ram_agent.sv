@@ -1,11 +1,11 @@
 `timescale 1ps/1ps
 package Ram_agent_pkg;
 import shared_pkg::*;
-import config_pkg::*;
-import driver_pkg::*;
-import sequencer_pkg::*;
-import sequenceItem_pkg::*;
-import monitor_pkg::*;
+import Ram_config_pkg::*;
+import Ram_driver_pkg::*;
+import Ram_sequencer_pkg::*;
+import Ram_sequenceItem_pkg::*;
+import Ram_monitor_pkg::*;
 import uvm_pkg::*;
 `include "uvm_macros.svh"
 `define create_obj(type, name) type::type_id::create(name, this);
@@ -25,20 +25,29 @@ class Ram_agent extends uvm_agent;
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
 
-        if (!uvm_config_db#(Ram_config)::get(this, "", "CFG", cfg))
-            `uvm_fatal("build_phase", "DRIVER - Unable to get config");
+        // if (!uvm_config_db#(Ram_config)::get(this, "", "CFG", cfg))
+        //     `uvm_fatal("build_phase", "AGENT - Unable to get config");
 
-        sqr = `create_obj(sequencer, "sqr")
-        drv = `create_obj(Ram_driver, "drv")
-        mon = `create_obj(Ram_monitor, "mon")
+        if (cfg.Ram_agent_isActive == UVM_ACTIVE) begin
+            sqr = sequencer::type_id::create("sqr", this);
+            drv = Ram_driver::type_id::create("drv", this);
+        end
+
+        mon = Ram_monitor::type_id::create("mon", this);
+
         agt_port = new("agt_port", this);
         `uvm_info("RAM Agent Build Phase", get_full_name(), UVM_HIGH)
     endfunction
 
     function void connect_phase(uvm_phase phase);
-        drv.v_if = cfg.v_if;
+        super.connect_phase(phase);
+        
+        if (cfg.Ram_agent_isActive == UVM_ACTIVE) begin
+            drv.v_if = cfg.v_if;
+            drv.seq_item_port.connect(sqr.seq_item_export);
+        end
+
         mon.v_if = cfg.v_if;
-        drv.seq_item_port.connect(sqr.seq_item_export);
         mon.mon_port.connect(agt_port);
         `uvm_info("RAM Agent connect Phase", get_full_name(), UVM_HIGH)
     endfunction //connect_phase
