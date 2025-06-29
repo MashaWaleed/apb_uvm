@@ -1,4 +1,4 @@
-
+package apb_driver_pkg;
 `timescale 1ps/1ps
 `include "uvm_macros.svh"
 
@@ -6,12 +6,7 @@
     import uvm_pkg::*;  
     import shared_pkg::*;
     import config_pkg::*;
-    import driver_pkg::*;
-    import sequencer_pkg::*;
-    import sequenceItem_pkg::*;
-    import monitor_pkg::*;
-
-
+ 
 // Optional convenience macro
 `define CREATE_OBJ(type,name) type::type_id::create(name)
 
@@ -63,3 +58,4 @@ class APB_driver extends uvm_driver #(APB_sequence_item);
   endtask
 
 endclass
+endpackage
