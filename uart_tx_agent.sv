@@ -1,14 +1,16 @@
-`timescale 1ps/1ps
+package uart_tx_agent_pkg;
+    
+endpackage
 `include "uvm_macros.svh"
 
    // Import UVM package
     import uvm_pkg::*;  
     import shared_pkg::*;
     import config_pkg::*;
-    import driver_pkg::*;
-    import sequencer_pkg::*;
-    import sequenceItem_pkg::*;
-    import monitor_pkg::*;
+    // import uart_tx_driver_pkg::*;
+    // import uart_tx_sequencer_pkg::*;
+    // import uart_tx_sequence_item_pkg::*;
+    import uart_tx_monitor_pkg::*;
 
 
 class uart_tx_agent extends uvm_agent;
@@ -16,9 +18,9 @@ class uart_tx_agent extends uvm_agent;
     `uvm_component_utils(uart_tx_agent);
 
     //components
-    uart_tx_driver drv;
+    // uart_tx_driver drv;
     uart_tx_monitor mon;
-    uart_tx_sequencer seqr;
+    // uart_tx_sequencer seqr;
     uart_tx_config cfg;
 
      // Analysis port for external subscribers / scoreboard

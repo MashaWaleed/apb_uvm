@@ -7,7 +7,7 @@ package apb_sequence_item_pkg;
     import shared_pkg::*;
     import config_pkg::*;
 
-class apb_item extends uvm_sequence_item;
+class apb_sequence_item extends uvm_sequence_item;
 
   // Indicates read or write (1 = write, 0 = read)
   rand bit        pwrite;
@@ -21,9 +21,9 @@ class apb_item extends uvm_sequence_item;
   // Read data (if pwrite == 0, filled by monitor)
   bit [7:0]       prdata;
 
-  `uvm_object_utils(apb_item)
+  `uvm_object_utils(apb_sequence_item)
 
-  function new(string name = "apb_item");
+  function new(string name = "apb_sequence_item");
     super.new(name);
   endfunction
 

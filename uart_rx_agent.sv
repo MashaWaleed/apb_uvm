@@ -1,21 +1,19 @@
 
-`timescale 1ps/1ps
-  
+package uart_rx_agent_pkg;
   import uvm_pkg::*;
   import shared_pkg::*;
   import config_pkg::*;
-  import driver_pkg::*;        // contains Uart_rx_driver
-  import monitor_pkg::*;       // contains Uart_rx_monitor
-  import sequencer_pkg::*;     // contains Uart_rx_sequencer
-  import sequenceItem_pkg::*;  // contains Uart_rx_sequenceItem
   `include "uvm_macros.svh"
+  import uart_rx_driver_pkg::*;
+  import uart_rx_sequencer_pkg::*;
+  import uart_rx_sequence_item_pkg::*;
 
   class Uart_rx_agent extends uvm_agent;
     `uvm_component_utils(Uart_rx_agent)
 
     Uart_rx_sequencer                     sqr;
     Uart_rx_driver                        drv;
-    Uart_rx_monitor                       mon;
+    // Uart_rx_monitor                       mon;
     Uart_rx_config                        cfg;
 
     uvm_analysis_port #(Uart_rx_sequenceItem) agt_port;
@@ -51,3 +49,4 @@
 
   endclass
 
+endpackage

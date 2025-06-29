@@ -1,14 +1,12 @@
-`timescale 1ps/1ps
+package uart_rx_sequence_item_pkg;
+  
+
 `include "uvm_macros.svh"
 
    // Import UVM package
     import uvm_pkg::*;  
     import shared_pkg::*;
     import config_pkg::*;
-    import driver_pkg::*;
-    import sequencer_pkg::*;
-    import sequenceItem_pkg::*;
-    import monitor_pkg::*;
 
 class uart_rx_item extends uvm_sequence_item;
 
@@ -26,3 +24,4 @@ class uart_rx_item extends uvm_sequence_item;
   endfunction
 
 endclass
+endpackage

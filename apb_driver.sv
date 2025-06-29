@@ -6,11 +6,12 @@ package apb_driver_pkg;
     import uvm_pkg::*;  
     import shared_pkg::*;
     import config_pkg::*;
+    import apb_sequence_item_pkg::*;
  
 // Optional convenience macro
 `define CREATE_OBJ(type,name) type::type_id::create(name)
 
-class APB_driver extends uvm_driver #(APB_sequence_item);
+class APB_driver extends uvm_driver #(apb_sequence_item);
   `uvm_component_utils(APB_driver)
 
   // Virtual interface
@@ -32,7 +33,7 @@ class APB_driver extends uvm_driver #(APB_sequence_item);
   // Run Phase
   task run_phase(uvm_phase phase);
     super.run_phase(phase);
-    APB_sequence_item req;
+    // apb_sequence_item req;
 
     /*forever begin
       apb_item item;  // Declare a variable for the APB transaction item
@@ -54,7 +55,7 @@ class APB_driver extends uvm_driver #(APB_sequence_item);
       
       seq_item_port.item_done();  // Mark the item as done, so sequencer can send the next one
     end*/
-    `uvm_info("rx Driver run Phase", get_full_name(), UVM_HIGH)
+    // `uvm_info("rx Driver run Phase", get_full_name(), UVM_HIGH)
   endtask
 
 endclass

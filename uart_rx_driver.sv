@@ -1,14 +1,17 @@
-`timescale 1ps/1ps
+package uart_rx_driver_pkg;
+  
+
 `include "uvm_macros.svh"
 
    // Import UVM package
     import uvm_pkg::*;  
     import shared_pkg::*;
     import config_pkg::*;
-    import driver_pkg::*;
-    import sequencer_pkg::*;
-    import sequenceItem_pkg::*;
-    import monitor_pkg::*;
+    import uart_rx_sequence_item_pkg::*;
+    // import driver_pkg::*;
+    // import sequencer_pkg::*;
+    // import sequenceItem_pkg::*;
+    // import monitor_pkg::*;
     
 class Uart_rx_driver extends uvm_driver #(Uart_rx_sequence_item);
   `uvm_component_utils(Uart_rx_driver)
@@ -62,3 +65,5 @@ class Uart_rx_driver extends uvm_driver #(Uart_rx_sequence_item);
     `uvm_info("UART_RX_DRV", "Run phase started", UVM_HIGH)
   endtask
 endclass
+
+endpackage
