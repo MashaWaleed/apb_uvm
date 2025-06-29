@@ -1,190 +1,218 @@
-# APB UART UVM Testbench
+# UART System with FIFO and Baud Rate Generator
 
-This is a UVM testbench for an APB UART project. The testbench provides the basic structure and components needed for verification, with specific components left for other team members to implement.
+This project implements a complete UART (Universal Asynchronous Receiver-Transmitter) system with FIFO buffers and an integrated baud rate generator. The system is designed for both simulation and hardware implementation.
 
-## Current Implementation
-
-The testbench currently includes:
-
-1. **Basic UVM Structure**
-   - Package file (`apb_uart_pkg.sv`)
-   - Environment (`apb_uart_env.sv`)
-   - Base test (`base_test.sv`)
-
-2. **Three Agents**
-   - APB Agent (active)
-   - UART Agent (active, can be converted to passive)
-   - RAM Agent (active, can be converted to passive)
-
-3. **Configuration Classes**
-   - Agent configurations with virtual interfaces
-   - Active/passive mode configuration
-
-## Missing Components (To Be Implemented)
-
-1. **Interfaces**
-   - `apb_if.sv`
-   - `uart_if.sv`
-   - `ram_if.sv`
-
-2. **Sequences**
-   - APB sequences
-   - UART sequences
-   - RAM sequences
-
-3. **Scoreboard**
-   - Transaction comparison
-   - Error checking
-
-4. **Coverage**
-   - Functional coverage
-   - Code coverage
-
-## How to Extend the Testbench
-
-### 1. Adding Interfaces
-
-Create the following interface files in the `tb` directory:
-
-```systemverilog
-// apb_if.sv
-interface apb_if(input logic pclk, input logic presetn);
-    // Add APB interface signals here
-endinterface
-
-// uart_if.sv
-interface uart_if(input logic clk, input logic rst_n);
-    // Add UART interface signals here
-endinterface
-
-// ram_if.sv
-interface ram_if(input logic clk, input logic rst_n);
-    // Add RAM interface signals here
-endinterface
-```
-
-### 2. Adding Sequences
-
-Create sequence files in a new `tb/uvm/seq_lib` directory:
-
-```systemverilog
-// apb_seq_lib.sv
-class apb_base_seq extends uvm_sequence #(apb_seq_item);
-    // Add sequence implementation
-endclass
-
-// uart_seq_lib.sv
-class uart_base_seq extends uvm_sequence #(uart_seq_item);
-    // Add sequence implementation
-endclass
-
-// ram_seq_lib.sv
-class ram_base_seq extends uvm_sequence #(ram_seq_item);
-    // Add sequence implementation
-endclass
-```
-
-### 3. Adding Scoreboard
-
-Create a scoreboard file in `tb/uvm`:
-
-```systemverilog
-// scoreboard.sv
-class apb_uart_scoreboard extends uvm_scoreboard;
-    // Add scoreboard implementation
-endclass
-```
-
-### 4. Adding Coverage
-
-Create coverage files in `tb/uvm`:
-
-```systemverilog
-// coverage.sv
-class apb_uart_coverage extends uvm_subscriber #(apb_seq_item);
-    // Add coverage implementation
-endclass
-```
-
-## Integration Steps
-
-1. **Add Missing Files**
-   - Add all interface files
-   - Add sequence files
-   - Add scoreboard
-   - Add coverage
-
-2. **Update Package File**
-   - Add includes for new files
-   - Update import statements if needed
-
-3. **Update Environment**
-   - Add scoreboard instance
-   - Add coverage instance
-   - Connect analysis ports
-
-4. **Update Base Test**
-   - Add sequence creation and starting
-   - Add scoreboard and coverage configuration
-
-## Converting Agents to Passive
-
-To convert UART and RAM agents to passive mode:
-
-1. In the test configuration:
-```systemverilog
-uart_cfg.is_active = UVM_PASSIVE;
-ram_cfg.is_active = UVM_PASSIVE;
-```
-
-2. Update the environment to handle passive agents:
-```systemverilog
-function void connect_phase(uvm_phase phase);
-    // Connect passive agent monitors
-    uart_agt.mon.ap.connect(scoreboard.uart_export);
-    ram_agt.mon.ap.connect(scoreboard.ram_export);
-endfunction
-```
-
-## Running the Testbench
-
-1. Compile all files:
-```bash
-vlog -sv tb/uvm/*.sv tb/*.sv
-```
-
-2. Run simulation:
-```bash
-vsim -c work.base_test
-```
-
-## Directory Structure
+## 📁 Project Structure
 
 ```
-tb/
-├── uvm/
-│   ├── apb_agent.sv
-│   ├── uart_agent.sv
-│   ├── ram_agent.sv
-│   ├── apb_agent_config.sv
-│   ├── uart_agent_config.sv
-│   ├── ram_agent_config.sv
-│   ├── apb_uart_env.sv
-│   ├── base_test.sv
-│   ├── apb_uart_pkg.sv
-│   └── seq_lib/          # To be added
-│       ├── apb_seq_lib.sv
-│       ├── uart_seq_lib.sv
-│       └── ram_seq_lib.sv
-├── apb_if.sv            # To be added
-├── uart_if.sv           # To be added
-└── ram_if.sv            # To be added
+├── README.md                    # This file
+├── baud_rate_generator.sv       # Baud rate generator module
+├── uart_top.sv                  # Top-level UART module with FIFOs
+├── tb_uart_top.sv              # Testbench for uart_top
+├── compile_and_run.do          # ModelSim compilation and simulation script
+├── uart_rx_if.sv               # UART RX interface
+├── uart_tx_if.sv               # UART TX interface
+├── fifo_if.sv                  # FIFO interface
+├── UartRx.sv                   # UART receiver module
+├── UartTx.sv                   # UART transmitter module
+├── fifo.sv                     # FIFO implementation
+└── APB_slave.sv               # APB slave interface (for uart_apb)
 ```
 
-## Notes
+## 🔧 Core Components
 
-- All agents start as active but UART and RAM agents can be converted to passive
-- TLM communication is set up through analysis ports
-- config_db is used for configuration
-- Scoreboard and coverage are left for other team members to implement
-- Sequences are left for other team members to implement 
+### 1. Baud Rate Generator (`baud_rate_generator.sv`)
+Generates timing ticks for UART communication at the specified baud rate.
+
+**Parameters:**
+- `CLK_FREQ`: System clock frequency (default: 100MHz)
+- `BAUD_RATE`: Desired baud rate (default: 115200)
+- `OVERSAMPLE`: Oversampling factor (default: 16)
+- `SIMULATION`: Simulation mode flag (1=fast sim, 0=real hardware)
+
+**Ports:**
+- `clk`: System clock input
+- `rst_n`: Active-low reset
+- `tick`: Baud rate tick output
+
+**Features:**
+- Configurable for simulation speed vs. real hardware timing
+- Automatic counter calculation based on clock frequency and baud rate
+- Reset-safe operation
+
+### 2. FIFO Module (`fifo.sv`)
+First-In-First-Out buffer for storing UART data.
+
+**Parameters:**
+- `width`: Data width in bits (default: 8)
+- `depth`: FIFO depth (default: 16)
+
+**Ports:**
+- `clk`: Clock input
+- `rst_n`: Active-low reset
+- `wr_en`: Write enable
+- `rd_en`: Read enable
+- `din`: Data input
+- `dout`: Data output
+- `full`: FIFO full flag
+- `empty`: FIFO empty flag
+
+**Features:**
+- Circular buffer implementation
+- Full/empty status flags
+- Synchronous read/write operations
+- Configurable width and depth
+
+### 3. UART Top Module (`uart_top.sv`)
+Top-level module that integrates all UART components.
+
+**Parameters:**
+- `DATA_BITS`: Number of data bits (default: 8)
+- `PAR_TYP`: Parity type (0=even, 1=odd, 2=none)
+- `SB_TICK`: Stop bit ticks (default: 16)
+- `FIFO_DEPTH`: FIFO depth (default: 16)
+- `CLK_FREQ`: Clock frequency (default: 100MHz)
+- `BAUD_RATE`: Baud rate (default: 115200)
+
+**Ports:**
+- `clk`: System clock
+- `rst_n`: Active-low reset
+- `rx`: UART receive input
+- `tx`: UART transmit output
+- `tx_fifo_wr_en`: TX FIFO write enable
+- `tx_fifo_din`: TX FIFO data input
+- `tx_fifo_full`: TX FIFO full flag
+- `rx_fifo_rd_en`: RX FIFO read enable
+- `rx_fifo_dout`: RX FIFO data output
+- `rx_fifo_empty`: RX FIFO empty flag
+- `rx_error`: Receive error flag
+
+**Features:**
+- Integrated baud rate generator
+- TX and RX FIFO buffers
+- Automatic TX transmission when data available
+- Error detection and reporting
+- Interface-based connections for modularity
+
+## 🧪 Testbench (`tb_uart_top.sv`)
+
+The testbench demonstrates the complete UART system functionality:
+
+**Test Features:**
+- Generates random test data
+- Writes data to TX FIFO
+- Monitors UART transmission and reception
+- Reads data from RX FIFO
+- Verifies data integrity through the system
+
+**Test Flow:**
+1. Reset the system
+2. Write 5 random bytes to TX FIFO
+3. Monitor TX transmission
+4. Wait for RX reception
+5. Read all data from RX FIFO
+6. Verify data matches original
+
+## 🚀 Usage
+
+### Compilation and Simulation
+
+1. **Set up ModelSim environment:**
+   ```bash
+   export PATH=/path/to/modelsim/bin:$PATH
+   ```
+
+2. **Compile and run:**
+   ```bash
+   vsim -do compile_and_run.do
+   ```
+
+3. **Or compile manually:**
+   ```bash
+   vlib work
+   vlog -sv uart_rx_if.sv uart_tx_if.sv fifo_if.sv fifo.sv UartRx.sv UartTx.sv baud_rate_generator.sv uart_top.sv tb_uart_top.sv
+   vsim -novopt work.tb_uart_top
+   ```
+
+### Expected Output
+```
+=== Starting UART Top Test ===
+Time 300: Clock frequency: 100000000 Hz
+Time 300: Baud rate: 115200
+Time 305: Writing data fe to TX FIFO
+Time 315: [UART TX] Starting transmission with data fe
+Time 10415: [UART RX] Received data fe
+...
+=== Reading Received Data ===
+Time 100865: Read data fe from RX FIFO
+Time 100975: Read data 1d from RX FIFO
+...
+=== Test Results ===
+UART top test completed successfully
+```
+
+## 🔧 Configuration
+
+### For Simulation
+- Set `SIMULATION = 1` in baud rate generator
+- Uses fast timing for quick simulation results
+
+### For Hardware
+- Set `SIMULATION = 0` in baud rate generator
+- Uses real baud rate timing
+- Configure `CLK_FREQ` and `BAUD_RATE` for your system
+
+### Customization
+- Modify `FIFO_DEPTH` for different buffer sizes
+- Adjust `DATA_BITS` for different data widths
+- Change `PAR_TYP` for different parity settings
+- Update `SB_TICK` for different stop bit configurations
+
+## 📊 System Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   TX FIFO       │    │   UART TX       │    │   UART RX       │
+│                 │    │                 │    │                 │
+│  wr_en, din     │───▶│  tx_start       │    │  rx_done        │
+│  rd_en, dout    │◀───│  tx_data        │    │  rx_data        │
+│  full, empty    │    │  tx_done        │    │  rx_error       │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   RX FIFO       │    │   Baud Rate     │    │   External      │
+│                 │    │   Generator     │    │   UART Pins     │
+│  wr_en, din     │◀───│  tick           │───▶│  rx, tx         │
+│  rd_en, dout    │    │                 │    │                 │
+│  full, empty    │    │                 │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+## 🎯 Key Features
+
+- **Modular Design**: Uses SystemVerilog interfaces for clean connections
+- **Configurable**: Parameters for different baud rates, data widths, and FIFO depths
+- **Simulation Optimized**: Fast simulation mode for quick testing
+- **Hardware Ready**: Real timing mode for actual hardware implementation
+- **Error Detection**: Parity and framing error detection
+- **FIFO Buffering**: Prevents data loss and enables burst transfers
+
+## 🔍 Troubleshooting
+
+### Common Issues:
+1. **Slow simulation**: Check `SIMULATION` parameter in baud rate generator
+2. **FIFO not working**: Verify FIFO interface connections
+3. **Data corruption**: Check baud rate and clock frequency settings
+4. **Compilation errors**: Ensure all dependencies are compiled in correct order
+
+### Debug Tips:
+- Use ModelSim wave viewer to monitor signals
+- Check FIFO full/empty flags
+- Monitor baud rate generator ticks
+- Verify UART transmission timing
+
+## 📝 License
+
+This project is provided as-is for educational and development purposes. 
