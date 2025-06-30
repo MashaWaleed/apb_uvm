@@ -1,7 +1,6 @@
 import shared_pkg::*;
 
 module UartTx #(
-  parameter int DATA_WIDTH = 8,
   parameter int PARITY_EN  = 0, // 0 = no parity, 1 = even, 2 = odd
   parameter int STOP_BITS  = 1  // number of stop bits
 )(
