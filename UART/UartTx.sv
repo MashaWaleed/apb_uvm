@@ -13,8 +13,8 @@ module UartTx #(
   uart_states_e state;
 
   logic [DATA_WIDTH-1:0] shift_reg;
-  logic [3:0] bit_cnt;
-  logic [1:0] stop_cnt;
+  logic [$clog2(DATA_WIDTH):0] bit_cnt;
+  logic [$clog2(STOP_BITS):0] stop_cnt;
   logic parity_bit;
 
   always_ff @(posedge intf.clk or negedge intf.rst_n) begin

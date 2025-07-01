@@ -11,12 +11,11 @@ module UartRx #(
   localparam START_BIT = 1'b0; // start bit is always low
   localparam STOP_BIT  = 1'b1; // stop bit is always
   
-
   uart_states_e state;
 
   logic [DATA_WIDTH-1:0] shift_reg;
-  logic [3:0] bit_cnt;
-  logic [1:0] stop_cnt;
+  logic [$clog2(DATA_WIDTH):0] bit_cnt;
+  logic [$clog2(STOP_BITS):0] stop_cnt;
   logic computed_parity;
   logic parity_bit;
 
@@ -46,9 +45,9 @@ module UartRx #(
         end
 
         START: begin
-          if (intf.rx == 1'b0) begin
+          if (intf.rx == START_BIT)
             state <= DATA;
-          end else begin
+          else begin
             intf.rx_error <= 1;  // false start bit
             state <= IDLE;
           end

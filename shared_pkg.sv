@@ -2,12 +2,5 @@ package shared_pkg;
     parameter ADDR_WIDTH = 16;
     parameter DATA_WIDTH = 32;
     parameter PSTRB_WIDTH = DATA_WIDTH/8;
-    typedef enum logic [2:0] {
-    IDLE,
-    START,
-    DATA,
-    PARITY,
-    STOP,
-    DONE
-  } uart_states_e;
+    typedef enum logic [2:0] {IDLE,START,DATA,PARITY,STOP,DONE} uart_states_e;
 endpackage
