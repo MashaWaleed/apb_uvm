@@ -2,31 +2,29 @@ module uart_top #(
   parameter DATA_BITS = 8,
   parameter PAR_TYP = 0,    // even parity
   parameter SB_TICK = 16,   // stop bit ticks
-
-  parameter FIFO_DEPTH = 16 // how many things can fit in fifo
+  parameter FIFO_DEPTH = 16, // how many things can fit in fifo
+  parameter CLK_FREQ = 100_000_000,  // clock frequency in Hz
+  parameter BAUD_RATE = 115200       // baud rate
 )(
   input  logic clk,         // clock
   input  logic rst_n,       // reset (active low)
   input  logic rx,          // rx pin
-
   output logic tx,          // tx pin
-  //input  logic tick,        // baud tick
   
   // tx fifo stuff
   input  logic tx_fifo_wr_en,
-
   input  logic [DATA_BITS-1:0] tx_fifo_din,
   output logic tx_fifo_full,
   
   // rx fifo stuff
   input  logic rx_fifo_rd_en,
   output logic [DATA_BITS-1:0] rx_fifo_dout,
-
-
   output logic rx_fifo_empty,
-
   output logic rx_error      // rx messed up
 );
+
+  // internal tick signal from baud rate generator
+  logic tick;
 
   // stuff we need inside
   logic [DATA_BITS-1:0] uart_rx_data;
@@ -41,33 +39,36 @@ module uart_top #(
   logic tx_ready;  // tx can take more data
   
   // interfaces for uart and fifo
-
   uart_rx_if #(.DATA_BITS(DATA_BITS)) rx_if();
-
   uart_tx_if #(.DATA_BITS(DATA_BITS)) tx_if();
   fifo_if #(.width(DATA_BITS), .depth(FIFO_DEPTH)) tx_fifo_if(.clk(clk), .rst_n(rst_n));
-
   fifo_if #(.width(DATA_BITS), .depth(FIFO_DEPTH)) rx_fifo_if(.clk(clk), .rst_n(rst_n));
+  
+  // make baud rate generator
+  baud_rate_generator #(
+    .CLK_FREQ(CLK_FREQ),
+    .BAUD_RATE(BAUD_RATE),
+    .OVERSAMPLE(16),
+    .SIMULATION(1)
+  ) baud_gen_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .tick(tick)
+  );
   
   // hook up rx stuff
   assign rx_if.clk = clk;
   assign rx_if.rst_n = rst_n;
   assign rx_if.rx = rx;
-
-  //assign rx_if.tick = tick;
-
+  assign rx_if.tick = tick;
   assign uart_rx_data = rx_if.rx_data;
-
   assign rx_done = rx_if.rx_done;
   assign rx_error = rx_if.rx_error;
   
-  //hook up tx stuff
-
-
+  // hook up tx stuff
   assign tx_if.clk = clk;
   assign tx_if.rst_n = rst_n;
-
-  //assign tx_if.tick = tick;
+  assign tx_if.tick = tick;
   assign tx_if.tx_start = tx_start;
   assign tx_if.tx_data = tx_data;
   assign tx_done = tx_if.tx_done;
@@ -76,14 +77,12 @@ module uart_top #(
   // hook up tx fifo
   assign tx_fifo_if.wr_en = tx_fifo_wr_en;
   assign tx_fifo_if.din = tx_fifo_din;
-
   assign tx_fifo_full = tx_fifo_if.full;
   assign tx_fifo_empty = tx_fifo_if.empty;
   
   // hook up rx fifo
   assign rx_fifo_if.wr_en = rx_done && !rx_fifo_if.full;
   assign rx_fifo_if.din = uart_rx_data;
-
   assign rx_fifo_if.rd_en = rx_fifo_rd_en;
   assign rx_fifo_dout = rx_fifo_if.dout;
   assign rx_fifo_empty = rx_fifo_if.empty;
@@ -92,11 +91,8 @@ module uart_top #(
   // make sure tx is ready for next byte
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n)
-
       tx_ready <= 1'b1; // good to go after reset
-
     else if (tx_start)
-
       tx_ready <= 1'b0; // busy now
     else if (tx_done)
       tx_ready <= 1'b1; // done, can take more
@@ -158,5 +154,5 @@ module uart_top #(
     .full(rx_fifo_if.full),
     .empty(rx_fifo_if.empty)
   );
-
+  
 endmodule

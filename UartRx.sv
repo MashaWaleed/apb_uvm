@@ -6,8 +6,6 @@ module UartRx #(
   uart_rx_if.DUT uart_if
 );
 
-  localparam int TOTALBITS = DATA_BITS + 1; // Data bits + one parity bit
-  
   //–– Alias interface signals ––
   wire        clk   = uart_if.clk;
   wire        rx    = uart_if.rx;
@@ -28,26 +26,29 @@ module UartRx #(
   //-- FSM states & local signals
   //------------------------------------------------------------------------
 
-  typedef enum logic [2:0] {IDLE, START, DATA, STOP} state_e;
+  typedef enum logic [2:0] {IDLE, START, DATA, PARITY, STOP} state_e;
   state_e state, next_state;
 
-  logic [TOTALBITS-1:0]         shiftReg , shiftReg_next;
-  logic [$clog2(TOTALBITS):0]   tickCnt, next_tickCnt;  // Enough bits to count ticks per bit
-  logic [$clog2(TOTALBITS):0]   shiftedBitsCnt, shiftedBitsCnt_next;  // Count of bits received
+  logic [DATA_BITS-1:0]        data_reg, next_data_reg;
+  logic                        parity_bit, next_parity_bit;
+  logic [$clog2(16)-1:0]       tick_cnt, next_tick_cnt;  // Count ticks (0-15)
+  logic [$clog2(DATA_BITS):0]  bit_cnt, next_bit_cnt;    // Count data bits received
   
   
   // Simplified sequential logic for state transition and data processing
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
       state <= IDLE;
-      tickCnt <= '0;
-      shiftedBitsCnt <= '0;
-      shiftReg <= '0;
+      tick_cnt <= '0;
+      bit_cnt <= '0;
+      data_reg <= '0;
+      parity_bit <= '0;
     end else begin
       state <= next_state;
-      tickCnt <= next_tickCnt;
-      shiftedBitsCnt <= shiftedBitsCnt_next;
-      shiftReg <= shiftReg_next;
+      tick_cnt <= next_tick_cnt;
+      bit_cnt <= next_bit_cnt;
+      data_reg <= next_data_reg;
+      parity_bit <= next_parity_bit;
     end
   end
 
@@ -57,80 +58,87 @@ module UartRx #(
   always_comb begin
     // defaults - maintain current values
     next_state = state;
-    next_tickCnt = tickCnt;
-    shiftedBitsCnt_next = shiftedBitsCnt;
-    shiftReg_next = shiftReg;
+    next_tick_cnt = tick_cnt;
+    next_bit_cnt = bit_cnt;
+    next_data_reg = data_reg;
+    next_parity_bit = parity_bit;
 
     rx_done = 1'b0;
-    // rx_error = 1'b0;
+    rx_error = 1'b0;
 
     case (state)
 
       //----------- wait for start (line idle=1, start=0) -----------
       IDLE: begin
-
         // Reset counters in IDLE
-        next_tickCnt = '0;
-        shiftedBitsCnt_next = '0;
+        next_tick_cnt = '0;
+        next_bit_cnt = '0;
         
         if (rx == 1'b0) 
           next_state = START;
-
       end
     
       //----------- START: sample at mid-bit -----------
       START: if (tick) begin
-
-          if (tickCnt == 7) begin // we reached the middle of the start bit
-            next_tickCnt = '0;
+          if (tick_cnt == 7) begin // we reached the middle of the start bit
+            next_tick_cnt = '0;
             next_state = DATA;
           end else 
-            next_tickCnt = tickCnt + 1'b1;
-          
+            next_tick_cnt = tick_cnt + 1'b1;
       end
       
-
-      //----------- DATA: shift N bits -----------
+      //----------- DATA: collect 8 data bits -----------
       DATA: if (tick) begin
-        
-          if (tickCnt == 15) begin // Middle of data bit reached - sample
-            next_tickCnt = '0;
-            shiftReg_next = {rx, shiftReg[TOTALBITS-1:1]}; // Shift in new bit
+          if (tick_cnt == 15) begin // Sample at the end of each bit period
+            next_tick_cnt = '0;
+            next_data_reg = {rx, data_reg[DATA_BITS-1:1]}; // LSB first
             
-            if (shiftedBitsCnt == TOTALBITS - 1)
-              next_state = STOP;
-            else
-              shiftedBitsCnt_next = shiftedBitsCnt + 1'b1;
-
+            if (bit_cnt == DATA_BITS - 1) begin
+              next_bit_cnt = '0;
+              next_state = PARITY;
+            end else
+              next_bit_cnt = bit_cnt + 1'b1;
           end else 
-            next_tickCnt = tickCnt + 1'b1;
-          
+            next_tick_cnt = tick_cnt + 1'b1;
       end
       
-     
+      //----------- PARITY: check parity bit -----------
+      PARITY: if (tick) begin
+          if (tick_cnt == 15) begin
+            next_tick_cnt = '0;
+            next_parity_bit = rx; // Capture parity bit
+            next_state = STOP;
+          end else
+            next_tick_cnt = tick_cnt + 1'b1;
+      end
+      
       //----------- STOP: sample stop bit -----------
       STOP: if(tick) begin
-        
-          if (tickCnt == SB_TICK - 1) begin
-            next_tickCnt = '0;
-            rx_done = 1'b1;
+          if (tick_cnt == SB_TICK - 1) begin
+            next_tick_cnt = '0;
+            rx_done = 1'b1; // Signal byte received
+            
+            // Check parity - even parity: XOR of all bits should be 0
+            // odd parity: XOR of all bits should be 1
+            if (PAR_TYP == 0) // EVEN parity
+              rx_error = ^{data_reg, parity_bit}; // Error if odd parity
+            else              // ODD parity
+              rx_error = ~^{data_reg, parity_bit}; // Error if even parity
+              
             next_state = IDLE;
           end else 
-            next_tickCnt = tickCnt + 1'b1;
-          
+            next_tick_cnt = tick_cnt + 1'b1;
       end
-  
       
       default: begin // Default to IDLE state in case of unexpected state
         next_state = IDLE;
-        next_tickCnt = '0;
-        shiftedBitsCnt_next = '0;
+        next_tick_cnt = '0;
+        next_bit_cnt = '0;
       end
 
     endcase
   end
   
   // Final data output assignment
-  assign rx_data = shiftReg[DATA_BITS-1:0];
-  assign rx_error = ((^shiftReg[DATA_BITS:0]) != PAR_TYP);
+  assign rx_data = data_reg;
 endmodule

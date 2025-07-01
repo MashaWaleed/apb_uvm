@@ -88,7 +88,6 @@ module UART_wrapper #(
         .rst_n(PRESETn),
         .rx(rx),
         .tx(tx),
-        //.tick(tick),
         .tx_fifo_wr_en(tx_fifo_wr_en),
         .tx_fifo_din(tx_fifo_din),
         .tx_fifo_full(tx_fifo_full),
