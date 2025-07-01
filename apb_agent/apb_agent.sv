@@ -13,48 +13,44 @@ package apb_agent_pkg;
     
 class apb_agent extends uvm_agent;
 
-    `uvm_component_utils(apb_agent);
-
     // Components
-    APB_driver drv;
+    apb_driver drv;
     apb_monitor mon;
-    APB_sequencer seqr; 
+    apb_sequencer seqr; 
 
-    // Configuration
-    APB_config cfg; 
+    apb_config cfg; 
+    virtual APB_interface apbif;
 
-    // Analysis port for external subscribers / scoreboard
     uvm_analysis_port #(apb_sequence_item) agt_port;
 
+    `uvm_component_utils(apb_agent);
+//--------------------------------------------------------------
     function new(string name = "apb_agent", uvm_component parent = null);
         super.new(name, parent);
     endfunction
-
+//--------------------------------------------------------------
     // Build phase
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
 
-        cfg = APB_config::type_id::create("cfg");
-
-        // Create the driver, monitor, and sequencer
-        drv = APB_driver::type_id::create("drv", this);
+        cfg = apb_config::type_id::create("cfg");
+        drv = apb_driver::type_id::create("drv", this);
         mon = apb_monitor::type_id::create("mon", this);
-        seqr = APB_sequencer::type_id::create("seqr", this);
+        seqr = apb_sequencer::type_id::create("seqr", this);
         agt_port = new("agt_port", this);
 
-        `uvm_info("APB_AGENT", "Build phase done.", UVM_HIGH)
-
-        if(!uvm_config_db#(APB_config)::get(this, "", "apb", cfg))
-            `uvm_fatal("build_phase", "APB_AGENT - Unable to get virtual APB_interface ");
+        if(!uvm_config_db#(apb_config)::get(this, "", "apb", cfg))
+            `uvm_fatal("build_phase", "apb_AGENT - Unable to get virtual apb_interface ");
+        
+        `uvm_info("apb_AGENT", "Build phase done.", UVM_HIGH)
 
     endfunction
-
+//-----------------------------------------------------------------
     // Connect phase
     virtual function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
 
         // Connect interfaces for driver and monitor from cfg
-
         drv.apbif = cfg.apbif;
         mon.apbif = cfg.apbif;
 
@@ -65,7 +61,7 @@ class apb_agent extends uvm_agent;
         // Connect monitor to analysis port
         mon.mon_port.connect(agt_port);
         //mon_port: analysis port of the monitor class
-        //agt_port: 
+
         `uvm_info("APB_AGENT", "Connect phase done.", UVM_HIGH)
     endfunction
 endclass

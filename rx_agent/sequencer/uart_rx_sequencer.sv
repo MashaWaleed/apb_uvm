@@ -8,11 +8,10 @@ package uart_rx_sequencer_pkg;
     import config_pkg::*;
     import uart_rx_sequence_item_pkg::*;
 
-class Uart_rx_sequencer extends uvm_sequencer #(uart_rx_item);
-    `uvm_component_utils(Uart_rx_sequencer);
+class uart_rx_sequencer extends uvm_sequencer #(uart_rx_sequence_item);
+    `uvm_component_utils(uart_rx_sequencer);
 
-    function new(string name = "Uart_rx_sequencer",
-                 uvm_component parent = null);
+    function new(string name = "uart_rx_sequencer",uvm_component parent = null);
       super.new(name, parent);
     endfunction
   endclass

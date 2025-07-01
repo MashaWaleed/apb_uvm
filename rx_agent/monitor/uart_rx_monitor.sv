@@ -8,20 +8,18 @@ package uart_rx_monitor_pkg;
   // import uart_rx_sequence_item::*;
   `include "uvm_macros.svh"
 
-class Uart_rx_monitor extends uvm_monitor;
-  `uvm_component_utils(Uart_rx_monitor);
+class uart_rx_monitor extends uvm_monitor;
+  `uvm_component_utils(uart_rx_monitor);
 
-  // Virtual UART‑rx interface
+  // Virtual uART‑rx interface
   virtual uart_rx_if rxif;
-
-  // Sequence item type produced by this monitor
-  // Uart_rx_sequenceItem                 mon_seq_item;
+  uart_rx_config cfg;
 
   // Analysis port
-   uvm_analysis_port #(uart_rx_item) mon_port;
+   uvm_analysis_port #(uart_rx_sequence_item) mon_port;
 
   //--------------------------------------------------------------------
-  function new(string name = "Uart_rx_monitor", uvm_component parent = null);
+  function new(string name = "uart_rx_monitor", uvm_component parent = null);
     super.new(name, parent);
   endfunction
 
@@ -30,8 +28,9 @@ class Uart_rx_monitor extends uvm_monitor;
     super.build_phase(phase);
 
     mon_port = new("mon_port", this);
+    cfg = uart_rx_config::type_id::create("cfg");
 
-    if (!uvm_config_db#(virtual uart_rx_if)::get(this,"","rxif",rxif))
+    if (!uvm_config_db#(uart_rx_config)::get(this,"","rx",cfg))
       `uvm_fatal("UART_rx_MON", "Cannot get virtual uart_rx_if");
 
     `uvm_info("UART_rx_MON", "Build phase completed", UVM_HIGH);

@@ -1,6 +1,4 @@
 package uart_rx_driver_pkg;
-  
-
 `include "uvm_macros.svh"
 
    // Import UVM package
@@ -9,14 +7,15 @@ package uart_rx_driver_pkg;
     import config_pkg::*;
     import uart_rx_sequence_item_pkg::*;
   
-class Uart_rx_driver extends uvm_driver #(uart_rx_item);
-  `uvm_component_utils(Uart_rx_driver);
+class uart_rx_driver extends uvm_driver #(uart_rx_sequence_item);
+  `uvm_component_utils(uart_rx_driver);
 
-  // Virtual UART RX interface
+  // Virtual uart RX interface
   virtual uart_rx_if rxif;
+  uart_rx_config cfg;
 
   //--------------------------------------------------------------------
-  function new(string name="Uart_rx_driver", uvm_component parent=null);
+  function new(string name="uart_rx_driver", uvm_component parent=null);
     super.new(name,parent);
   endfunction
 
@@ -24,8 +23,9 @@ class Uart_rx_driver extends uvm_driver #(uart_rx_item);
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
 
-    if (!uvm_config_db#(virtual uart_rx_if)::get(this,"","rxif",rxif))
-     
+    cfg = uart_rx_config::type_id::create("cfg");
+
+    if (!uvm_config_db#(uart_rx_config)::get(this,"","rx",cfg))
       `uvm_fatal("UART_RX_DRV","Cannot get virtual uart_rx_if")
     
   endfunction
@@ -33,10 +33,11 @@ class Uart_rx_driver extends uvm_driver #(uart_rx_item);
   //--------------------------------------------------------------------
   task run_phase(uvm_phase phase);
     super.run_phase(phase);
+    rxif = cfg.rxif;
     
     /*
     forever begin
-    Uart_rx_sequence_item req;
+    uart_rx_sequence_item req;
     seq_item_port.get_next_item(item);
 
     // Send start bit (logic 0)
@@ -56,7 +57,7 @@ class Uart_rx_driver extends uvm_driver #(uart_rx_item);
     seq_item_port.item_done(); // Mark the item as done, so sequencer can send the next one
   end
   */
-    `uvm_info("UART_RX_DRV", "Run phase started", UVM_HIGH);
+    `uvm_info("uart_RX_DRV", "Run phase started", UVM_HIGH);
   endtask
 endclass
 

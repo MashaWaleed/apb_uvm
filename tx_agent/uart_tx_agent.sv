@@ -12,17 +12,14 @@ package uart_tx_agent_pkg;
 
 
 class uart_tx_agent extends uvm_agent;
- 
-    `uvm_component_utils(uart_tx_agent);
 
-    //components
-    // uart_tx_driver drv;
-    Uart_tx_monitor mon;
-    // uart_tx_sequencer seqr;
-    Uart_tx_config cfg;
+    virtual uart_tx_if txif;
+    uart_tx_monitor mon;
+    uart_tx_config cfg;
 
-     // Analysis port for external subscribers / scoreboard
-    uvm_analysis_port #(uart_tx_item) agt_port;
+    uvm_analysis_port #(uart_tx_sequence_item) agt_port;
+
+    `uvm_component_utils(uart_tx_agent)
 
     function new(string name = "tx_agent", uvm_component parent = null);
         super.new(name, parent);
@@ -32,15 +29,12 @@ class uart_tx_agent extends uvm_agent;
     virtual function void build_phase(uvm_phase phase);
         super.build_phase(phase);
 
-        cfg = Uart_tx_config::type_id::create("cfg");
-
-        if (!uvm_config_db#(Uart_tx_config)::get(this, "", "tx", cfg))
-        `uvm_fatal("build_phase","UART_TX_AGENT - Unable to retrieve Uart_tx_config");
-
-        // Create the monitor, and sequencer
-        mon = Uart_tx_monitor::type_id::create("mon", this);
-        //seqr = uart_tx_sequencer::type_id::create("seqr", this);
+        mon = uart_tx_monitor::type_id::create("mon", this);
         agt_port = new("agt_port", this);
+        cfg = uart_tx_config::type_id::create("cfg");
+
+        if (!uvm_config_db#(uart_tx_config)::get(this, "", "tx", cfg))
+        `uvm_fatal("build_phase","uart_TX_AGENT - Unable to retrieve uart_tx_config");
 
         `uvm_info("DEBUG", "uart_tx_agent build_phase completed", UVM_HIGH);
     endfunction

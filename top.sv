@@ -39,8 +39,8 @@ module top;
 
         uvm_config_db#(virtual APB_interface)::set(null, "uvm_test_top", "apbif", apbif);
         uvm_config_db#(virtual Ram_interface)::set(null, "uvm_test_top", "ramif", ramif);
-        uvm_config_db#(virtual uart_rx_if)::set(null, "uvm_test_top", "uart_rxif", uart_rxif);
-        uvm_config_db#(virtual uart_tx_if)::set(null, "uvm_test_top", "uart_txif", uart_txif);
+        uvm_config_db#(virtual uart_rx_if)::set(null, "uvm_test_top", "rxif", uart_rxif);
+        uvm_config_db#(virtual uart_tx_if)::set(null, "uvm_test_top", "txif", uart_txif);
 
         $dumpfile("dump.vcd");
         $dumpvars;

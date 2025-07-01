@@ -1,5 +1,5 @@
 $date
-	Tue Jul  1 20:00:16 2025
+	Tue Jul  1 23:37:47 2025
 $end
 $version
 	QuestaSim Version 2021.1
@@ -340,6 +340,9 @@ $scope begin uart_tx_agent_pkg $end
 $upscope $end
 
 $scope begin uart_rx_sequence_item_pkg $end
+$upscope $end
+
+$scope begin uart_rx_monitor_pkg $end
 $upscope $end
 
 $scope begin uart_rx_sequencer_pkg $end

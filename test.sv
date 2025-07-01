@@ -17,10 +17,10 @@ class test extends uvm_test;
 
     //configuration objects
     // These objects are used to configure the agents and interfaces
-    APB_config apb_config;
-    Uart_tx_config tx_config;
-    Uart_rx_config rx_config;
-    Ram_config ram_config;
+    apb_config apb_cfg;
+    uart_tx_config tx_cfg;
+    uart_rx_config rx_cfg;
+    Ram_config ram_cfg;
 
     
     function new(string name = "", uvm_component parent);
@@ -33,32 +33,32 @@ class test extends uvm_test;
         
         // Create instances of the configuration objects
         env = apb_uart_env::type_id::create("env", this); // Create an instance of the environment
-        apb_config = APB_config::type_id::create("apb_config");
-        tx_config = Uart_tx_config::type_id::create("tx_config");
-        rx_config = Uart_rx_config::type_id::create("rx_config");
-        ram_config = Ram_config::type_id::create("ram_config");
+        apb_cfg = apb_config::type_id::create("apb_config");
+        tx_cfg = uart_tx_config::type_id::create("tx_config");
+        rx_cfg = uart_rx_config::type_id::create("rx_config");
+        ram_cfg = Ram_config::type_id::create("ram_config");
 
 
-        if (!uvm_config_db#(virtual APB_interface)::get(this, "", "apbif", apb_config.apbif)) //retrieve vif
+        if (!uvm_config_db#(virtual APB_interface)::get(this, "", "apbif", apb_cfg.apbif)) //retrieve vif
             `uvm_fatal("build_phase", "TEST - Unable to retrieve apbif from config db");
 
-        if (!uvm_config_db#(virtual uart_tx_if)::get(this, "", "uart_txif", tx_config.txif))
+        if (!uvm_config_db#(virtual uart_tx_if)::get(this, "", "txif", tx_cfg.txif))
             `uvm_fatal("build_phase", "TEST - Unable to retrieve uart_txif from config db");
 
-        if (!uvm_config_db#(virtual uart_rx_if)::get(this, "", "uart_rxif", rx_config.rxif))
+        if (!uvm_config_db#(virtual uart_rx_if)::get(this, "", "rxif", rx_cfg.rxif))
             `uvm_fatal("build_phase", "TEST - Unable to retrieve uart_rxif from config db");
 
-        if (!uvm_config_db#(virtual Ram_interface)::get(this, "", "ramif", ram_config.v_if))
+        if (!uvm_config_db#(virtual Ram_interface)::get(this, "", "ramif", ram_cfg.v_if))
             `uvm_fatal("build_phase", "TEST - Unable to retrieve ramif from config db");
 
         // Set the configuration objects in the UVM config database
-        uvm_config_db#(APB_config)::set(this, "*", "apb", apb_config); //propagate full config objects
+        uvm_config_db#(apb_config)::set(this, "*", "apb", apb_cfg); //propagate full config objects
         //*: whom to spread to
         //apb: password passed to lower level
         // apb_config: value or what to pass
-        uvm_config_db#(Uart_tx_config)::set(this, "*", "tx", tx_config);
-        uvm_config_db#(Uart_rx_config)::set(this, "*", "rx", rx_config);
-        uvm_config_db#(Ram_config)::set(this, "*", "ram", ram_config);
+        uvm_config_db#(uart_tx_config)::set(this, "*", "tx", tx_cfg);
+        uvm_config_db#(uart_rx_config)::set(this, "*", "rx", rx_cfg);
+        uvm_config_db#(Ram_config)::set(this, "*", "ram", ram_cfg);
 
         
 
@@ -68,13 +68,9 @@ class test extends uvm_test;
         super.run_phase(phase);
 
         `uvm_info("DEBUG", "Running the test", UVM_HIGH);
-         phase.raise_objection(this, "TEST_DONE");
-      
         #(100ns);
-      
         `uvm_info("DEBUG", "this is the end of the test", UVM_LOW)
-      
-        phase.drop_objection(this, "TEST_DONE");
+
     endtask
 
 

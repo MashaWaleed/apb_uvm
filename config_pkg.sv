@@ -5,31 +5,31 @@ package config_pkg;
   `include "uvm_macros.svh"
 
   //------------------------------------------------------------
-  class APB_config extends uvm_object;
-    `uvm_object_utils(APB_config)
+  class apb_config extends uvm_object;
+    `uvm_object_utils(apb_config)
     virtual APB_interface apbif;
     
-    function new(string name = "APB_config");
+    function new(string name = "apb_config");
       super.new(name);
     endfunction
   endclass
 
   //------------------------------------------------------------
-  class Uart_tx_config extends uvm_object;
-    `uvm_object_utils(Uart_tx_config)
+  class uart_tx_config extends uvm_object;
     virtual uart_tx_if txif;
+    `uvm_object_utils(uart_tx_config)
    
-    function new(string name = "Uart_tx_config");
+    function new(string name = "uart_tx_config");
       super.new(name);
     endfunction
   endclass
 
   //------------------------------------------------------------
-  class Uart_rx_config extends uvm_object;
-    `uvm_object_utils(Uart_rx_config)
+  class uart_rx_config extends uvm_object;
+    `uvm_object_utils(uart_rx_config)
     virtual uart_rx_if rxif;
 
-    function new(string name = "Uart_rx_config");
+    function new(string name = "uart_rx_config");
       super.new(name);
     endfunction
   endclass
@@ -43,7 +43,7 @@ package config_pkg;
 
     function new(string name = "Ram_config");
         super.new(name);
-        Ram_agent_isActive  = UVM_ACTIVE;
+        Ram_agent_isActive = UVM_ACTIVE;
     endfunction //new()
 endclass //Ram_config
 

@@ -9,20 +9,16 @@ package apb_monitor_pkg;
     import apb_sequence_item_pkg::*;
 
 class apb_monitor extends uvm_monitor;
-  `uvm_component_utils(apb_monitor)
 
-  // Virtual APB interface
   virtual APB_interface apbif;
+  apb_config cfg;
 
-  // Sequence item type produced by this monitor
-  apb_sequence_item                mon_seq_item;
-
-  // Analysis port for scoreboards / subscribers
   uvm_analysis_port #(apb_sequence_item) mon_port;
 
+  `uvm_component_utils(apb_monitor)
+
   //------------------------------------------------------------
-  function new(string name = "APB_monitor",
-               uvm_component parent = null);
+  function new(string name = "apb_monitor", uvm_component parent = null);
     super.new(name, parent);
   endfunction
 
@@ -30,20 +26,22 @@ class apb_monitor extends uvm_monitor;
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
 
-    // Create the analysis port
+    cfg = apb_config::type_id::create("cfg");
     mon_port = new("mon_port", this);
 
     // Get virtual interface
-    if (!uvm_config_db#(virtual APB_interface)::get(this,"","apbif",apbif))
-      `uvm_fatal("APB_MON", "Cannot get virtual APB_interface")
+    if (!uvm_config_db#(apb_config)::get(this,"","apb",cfg))
+      `uvm_fatal("apb_MON", "Cannot get virtual apb_interface")
 
-    `uvm_info("APB_MON", "Build phase completed", UVM_HIGH)
+    `uvm_info("apb_MON", "Build phase completed", UVM_HIGH)
   endfunction
 
   //------------------------------------------------------------
   task run_phase(uvm_phase phase);
     super.run_phase(phase);
-    `uvm_info("APB_MON", "Run phase", UVM_HIGH)
+    `uvm_info("apb_MON", "Run phase", UVM_HIGH)
+
+
 /*
     forever begin
       apb_item item = apb_item::type_id::create("item");

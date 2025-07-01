@@ -7,19 +7,16 @@ package apb_driver_pkg;
     import shared_pkg::*;
     import config_pkg::*;
     import apb_sequence_item_pkg::*;
- 
-// Optional convenience macro
-`define CREATE_OBJ(type,name) type::type_id::create(name)
 
-class APB_driver extends uvm_driver #(apb_sequence_item);
-  `uvm_component_utils(APB_driver)
+class apb_driver extends uvm_driver #(apb_sequence_item);
 
-  // Virtual interface
   virtual APB_interface apbif;
-  APB_config cfg;
+  apb_config cfg;
+
+  `uvm_component_utils(apb_driver)
 
   // Constructor
-  function new(string name = "APB_driver", uvm_component parent = null);
+  function new(string name = "apb_driver", uvm_component parent = null);
     super.new(name, parent);
   endfunction
 
@@ -27,12 +24,12 @@ class APB_driver extends uvm_driver #(apb_sequence_item);
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
 
-    cfg = APB_config::type_id::create("cfg");
+    cfg = apb_config::type_id::create("cfg");
 
-    if (!uvm_config_db#(virtual APB_interface)::get(this,"","apb",cfg)) //retrieving only the interface not full config object
-      `uvm_fatal("APB_DRV", "Cannot get virtual APB_interface")
+    if (!uvm_config_db#(apb_config)::get(this,"","apb",cfg)) //retrieving only the interface not full config object
+      `uvm_fatal("apb_DRV", "Cannot get virtual apb_interface")
 
-    `uvm_info("APB_DRV", "Build phase completed", UVM_HIGH)
+    `uvm_info("apb_DRV", "Build phase completed", UVM_HIGH)
   endfunction
 
   // Run Phase
@@ -43,11 +40,11 @@ class APB_driver extends uvm_driver #(apb_sequence_item);
     // apb_sequence_item req;
 
     /*forever begin
-      apb_item item;  // Declare a variable for the APB transaction item
+      apb_item item;  // Declare a variable for the apb transaction item
       seq_item_port.get_next_item(item);  // Get next item from sequencer
 
-      // Apply address and data to the APB interface
-      apbif.psel = 1'b1;  // Select the APB device
+      // Apply address and data to the apb interface
+      apbif.psel = 1'b1;  // Select the apb device
       apbif.paddr = item.paddr;  // Apply address from the item
       apbif.pwdata = item.pwdata;  // Apply write data
       
@@ -57,11 +54,12 @@ class APB_driver extends uvm_driver #(apb_sequence_item);
         apbif.pwrite = 1'b0;  // Set to read mode
       end
 
-      // Wait for some time to simulate APB timing
+      // Wait for some time to simulate apb timing
       repeat(4) @(posedge apbif.clk);
       
       seq_item_port.item_done();  // Mark the item as done, so sequencer can send the next one
     end*/
+
     `uvm_info("rx Driver run Phase", get_full_name(), UVM_HIGH)
   endtask
 

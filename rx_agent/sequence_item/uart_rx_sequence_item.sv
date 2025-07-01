@@ -7,7 +7,7 @@ package uart_rx_sequence_item_pkg;
     import shared_pkg::*;
     import config_pkg::*;
 
-class uart_rx_item extends uvm_sequence_item;
+class uart_rx_sequence_item extends uvm_sequence_item;
 
   // Declare the properties of the item
 
@@ -15,10 +15,10 @@ class uart_rx_item extends uvm_sequence_item;
   rand bit [7:0] data;
 
   // Register this object with the factory
-  `uvm_object_utils(uart_rx_item);
+  `uvm_object_utils(uart_rx_sequence_item);
 
   // Constructor
-  function new(string name = "uart_rx_item");
+  function new(string name = "uart_rx_sequence_item");
     super.new(name);
   endfunction
 
