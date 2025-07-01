@@ -45,7 +45,7 @@ class apb_agent extends uvm_agent;
         `uvm_info("APB_AGENT", "Build phase done.", UVM_HIGH)
 
         if(!uvm_config_db#(APB_config)::get(this, "", "apb", cfg))
-            `uvm_fatal("build_phase", "APB_AGENT - Unable to get virtual APB_interface for driver");
+            `uvm_fatal("build_phase", "APB_AGENT - Unable to get virtual APB_interface ");
 
     endfunction
 
@@ -64,6 +64,8 @@ class apb_agent extends uvm_agent;
 
         // Connect monitor to analysis port
         mon.mon_port.connect(agt_port);
+        //mon_port: analysis port of the monitor class
+        //agt_port: 
         `uvm_info("APB_AGENT", "Connect phase done.", UVM_HIGH)
     endfunction
 endclass

@@ -39,7 +39,7 @@ class test extends uvm_test;
         ram_config = Ram_config::type_id::create("ram_config");
 
 
-        if (!uvm_config_db#(virtual APB_interface)::get(this, "", "apbif", apb_config.apbif)) //db must be in config
+        if (!uvm_config_db#(virtual APB_interface)::get(this, "", "apbif", apb_config.apbif)) //retrieve vif
             `uvm_fatal("build_phase", "TEST - Unable to retrieve apbif from config db");
 
         if (!uvm_config_db#(virtual uart_tx_if)::get(this, "", "uart_txif", tx_config.txif))
@@ -52,7 +52,10 @@ class test extends uvm_test;
             `uvm_fatal("build_phase", "TEST - Unable to retrieve ramif from config db");
 
         // Set the configuration objects in the UVM config database
-        uvm_config_db#(APB_config)::set(this, "*", "apb", apb_config);
+        uvm_config_db#(APB_config)::set(this, "*", "apb", apb_config); //propagate full config objects
+        //*: whom to spread to
+        //apb: password passed to lower level
+        // apb_config: value or what to pass
         uvm_config_db#(Uart_tx_config)::set(this, "*", "tx", tx_config);
         uvm_config_db#(Uart_rx_config)::set(this, "*", "rx", rx_config);
         uvm_config_db#(Ram_config)::set(this, "*", "ram", ram_config);

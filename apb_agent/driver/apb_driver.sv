@@ -16,6 +16,7 @@ class APB_driver extends uvm_driver #(apb_sequence_item);
 
   // Virtual interface
   virtual APB_interface apbif;
+  APB_config cfg;
 
   // Constructor
   function new(string name = "APB_driver", uvm_component parent = null);
@@ -25,14 +26,20 @@ class APB_driver extends uvm_driver #(apb_sequence_item);
   // Build Phase
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
-    if (!uvm_config_db#(virtual APB_interface)::get(this,"","apbif",apbif))
+
+    cfg = APB_config::type_id::create("cfg");
+
+    if (!uvm_config_db#(virtual APB_interface)::get(this,"","apb",cfg)) //retrieving only the interface not full config object
       `uvm_fatal("APB_DRV", "Cannot get virtual APB_interface")
+
     `uvm_info("APB_DRV", "Build phase completed", UVM_HIGH)
   endfunction
 
   // Run Phase
   task run_phase(uvm_phase phase);
     super.run_phase(phase);
+
+    apbif = cfg.apbif;
     // apb_sequence_item req;
 
     /*forever begin
@@ -55,7 +62,7 @@ class APB_driver extends uvm_driver #(apb_sequence_item);
       
       seq_item_port.item_done();  // Mark the item as done, so sequencer can send the next one
     end*/
-    // `uvm_info("rx Driver run Phase", get_full_name(), UVM_HIGH)
+    `uvm_info("rx Driver run Phase", get_full_name(), UVM_HIGH)
   endtask
 
 endclass

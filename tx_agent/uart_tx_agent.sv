@@ -1,15 +1,12 @@
 package uart_tx_agent_pkg;
     
-endpackage
 `include "uvm_macros.svh"
 
    // Import UVM package
     import uvm_pkg::*;  
     import shared_pkg::*;
     import config_pkg::*;
-    // import uart_tx_driver_pkg::*;
-    // import uart_tx_sequencer_pkg::*;
-    // import uart_tx_sequence_item_pkg::*;
+
     import uart_tx_monitor_pkg::*;
     import uart_tx_sequence_item_pkg::*; // contains uart_tx_item
 
@@ -59,3 +56,4 @@ class uart_tx_agent extends uvm_agent;
     endfunction
 
 endclass
+endpackage

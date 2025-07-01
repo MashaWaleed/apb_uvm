@@ -23,9 +23,11 @@ class Uart_rx_driver extends uvm_driver #(uart_rx_item);
   //--------------------------------------------------------------------
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
+
     if (!uvm_config_db#(virtual uart_rx_if)::get(this,"","rxif",rxif))
+     
       `uvm_fatal("UART_RX_DRV","Cannot get virtual uart_rx_if")
-    // Optionally fetch baud from cfg
+    
   endfunction
 
   //--------------------------------------------------------------------

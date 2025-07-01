@@ -20,10 +20,16 @@ class apb_uart_env extends uvm_env;
     `uvm_component_utils(apb_uart_env);
     
     Ram_agent ram_agent;
-    apb_agent apb_agent;
-    
+    apb_agent apb_agnt;
     Uart_rx_agent rx_agent;
     uart_tx_agent tx_agent;
+
+    APB_config apb_cfg;
+    Uart_tx_config uart_tx_cfg;
+    Uart_rx_config uart_rx_cfg;
+
+    Ram_config ram_cfg;
+
 
     function new(string name = "", uvm_component parent);
         super.new(name, parent);
@@ -35,8 +41,27 @@ class apb_uart_env extends uvm_env;
         // Create the agents
         rx_agent = Uart_rx_agent::type_id::create("rx_agent", this);
         tx_agent = uart_tx_agent::type_id::create("tx_agent", this);
-        apb_agent = apb_agent::type_id::create("apb_agent", this);
+        apb_agnt = apb_agent::type_id::create("apb_agnt", this);
         ram_agent = Ram_agent::type_id::create("ram_agent", this);
+
+        //create configs
+        apb_cfg = APB_config::type_id::create("apb_cfg", this);
+        uart_tx_cfg = Uart_tx_config::type_id::create("uart_tx_cfg", this);
+        uart_rx_cfg = Uart_rx_config::type_id::create("uart_rx_cfg", this);
+        ram_cfg = Ram_config::type_id::create("ram_cfg", this);
+
+        //get handle to vif via config_db
+        if (!uvm_config_db#(APB_config)::get(this, "", "apb", apb_cfg))
+            `uvm_fatal("ENV", "Unable to get apb_config from config DB")
+
+        if (!uvm_config_db#(Uart_tx_config)::get(this, "", "tx", uart_tx_cfg))
+            `uvm_fatal("ENV", "Unable to get tx_config from config DB")
+
+        if (!uvm_config_db#(Uart_rx_config)::get(this, "", "rx", uart_rx_cfg))
+            `uvm_fatal("ENV", "Unable to get rx_config from config DB")
+
+        if (!uvm_config_db#(Ram_config)::get(this, "", "ram", ram_cfg))
+            `uvm_fatal("ENV", "Unable to get ram_config from config DB")
     
     endfunction
 
