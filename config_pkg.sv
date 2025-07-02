@@ -1,5 +1,6 @@
 `timescale 1ps/1ps
 package config_pkg;
+  import reg_model_pkg::*;
   import shared_pkg::*;
   import uvm_pkg::*;
   `include "uvm_macros.svh"
@@ -8,6 +9,7 @@ package config_pkg;
   class apb_config extends uvm_object;
     `uvm_object_utils(apb_config)
     virtual APB_interface apbif;
+    reg_model my_medel;
     
     function new(string name = "apb_config");
       super.new(name);
