@@ -3,7 +3,7 @@ module UART_wrapper #(
     parameter PAR_TYP = 0,    // even parity
     parameter SB_TICK = 16,   // stop bit ticks
     parameter FIFO_DEPTH = 16, // how many things can fit in fifo
-    parameter ADDR_WIDTH = 32,
+    parameter ADDR_WIDTH = 16,
     parameter DATA_WIDTH = 32,
     parameter ADDR_slave = 2'b01,
     parameter MY_PROT = 3'b000
@@ -19,14 +19,13 @@ module UART_wrapper #(
     input  logic [DATA_WIDTH-1:0] PWDATA,
     input  logic [DATA_WIDTH/8-1:0] PSTRB,
     output logic [DATA_WIDTH-1:0] PRDATA,
-    output logic PSLVERR,
+    output logic [DATA_WIDTH-1:0] PSLVERR,
     output logic PREADY,
 
     // uart stuff
     input  logic rx,          // rx pin
-    output logic tx          // tx pin
-    //input  logic tick,        // baud tick
-    //output logic rx_error     // rx messed up
+    output logic tx,          // tx pin
+    output logic rx_error     // rx messed up
 );
 
     // internal signals
@@ -34,7 +33,7 @@ module UART_wrapper #(
     logic [DATA_WIDTH-1:0] address;
     logic write_read;
     logic enable;
-    logic strb;
+    logic [DATA_WIDTH/8-1:0] strb;
     logic ready;
     
     // uart fifo signals
@@ -44,7 +43,6 @@ module UART_wrapper #(
     logic rx_fifo_rd_en;
     logic [DATA_BITS-1:0] rx_fifo_dout;
     logic rx_fifo_empty;
-    logic rx_error;
 
     // make apb slave
     APB_slave #(
