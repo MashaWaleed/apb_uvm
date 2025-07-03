@@ -9,17 +9,17 @@ package apb_sequence_item_pkg;
 
 class apb_sequence_item extends uvm_sequence_item;
 
-  // Indicates read or write (1 = write, 0 = read)
-  rand bit        pwrite;
+  rand logic [ADDR_WIDTH-1:0]  PADDR;
+  rand logic [2:0]             PPROT;
+  rand logic                   PWRITE;  //(1 = write / 0 = read)
+  rand logic [DATA_WIDTH-1:0]  PWDATA;
+  rand logic [PSTRB_WIDTH-1:0] PSTRB;
+  rand logic                   PSELx;   //optional when modelling bursts
 
-  // Address to access (typically 8-bit or 32-bit)
-  rand bit [7:0]  paddr;
-
-  // Write data (if pwrite == 1)
-  rand bit [7:0]  pwdata;
-
-  // Read data (if pwrite == 0, filled by monitor)
-  bit [7:0]       prdata;
+  // fields set by the slave / monitor, NOT randomized
+  logic [DATA_WIDTH-1:0]  PRDATA;
+  logic                   slverr;    // PSLVERR
+  logic                   PREADY;
 
   `uvm_object_utils(apb_sequence_item)
 
